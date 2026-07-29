@@ -1,0 +1,28 @@
+{
+    "supplier_name": "ABC Office Supplies",
+    "supplier_tax_id": null,
+    "remit_to_address": "100 Main Street, New York, NY 10001",
+    "invoice_number": "INV-10025",
+    "invoice_date": "2026-07-24",
+    "po_number": "PO-45891",
+    "currency_code": "USD",
+    "gross_amount": 1125.5,
+    "tax_amount": 75.5,
+    "freight_amount": 50,
+    "discount_amount": 0,
+    "misc_charge_amount": 0,
+    "payment_terms": "Net 30",
+    "due_date": "2026-08-23",
+    "line_items": [
+      {
+        "line_number": 1,
+        "item_id": "ITEM-100",
+        "description": "Office chairs",
+        "quantity": 5,
+        "unit_of_measure": "EA",
+        "unit_price": 200,
+        "line_amount": 1000,
+        "po_line_number": 1
+      }
+    ]
+  }

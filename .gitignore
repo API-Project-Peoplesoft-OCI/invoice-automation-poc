@@ -1,0 +1,52 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# OCI credentials and private keys
+.oci/
+*.pem
+*.key
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Uploaded and generated invoice data
+uploads/*
+!uploads/.gitkeep
+
+output/*
+!output/.gitkeep
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# VS Code local settings
+.vscode/
+
+# Logs
+*.log
+
+# Coverage files
+.coverage
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/

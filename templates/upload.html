@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>{{ page_title }}</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='styles.css') }}"
+    >
+</head>
+
+<body>
+    <main class="page-container">
+        <section class="card">
+            <h1>Invoice Extraction POC</h1>
+
+            <p class="subtitle">
+                Upload an invoice for extraction and review.
+            </p>
+
+            <form
+                action="/invoices/upload"
+                method="post"
+                enctype="multipart/form-data"
+            >
+                <label for="invoice_file">
+                    Invoice file
+                </label>
+
+                <input
+                    id="invoice_file"
+                    name="invoice_file"
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    required
+                >
+
+                <p class="help-text">
+                    Supported formats: PDF, PNG, JPG and JPEG.
+                </p>
+
+                <button type="submit">
+                    Upload invoice
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
