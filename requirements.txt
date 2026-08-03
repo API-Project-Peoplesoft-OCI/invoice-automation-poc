@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-multipart
+jinja2
+pydantic
+pydantic-settings
+oci
+python-dotenv
