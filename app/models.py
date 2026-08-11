@@ -1,9 +1,17 @@
 from datetime import date
 from decimal import Decimal
 from typing import Optional
+from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+
+class InvoiceStatus(str, Enum):
+    PROCESSING = "PROCESSING"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    FAILED = "FAILED"
 
 class InvoiceLine(BaseModel):
     model_config = ConfigDict(

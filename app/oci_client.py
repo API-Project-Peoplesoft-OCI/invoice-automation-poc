@@ -18,6 +18,7 @@ class OCIInvoiceClient:
         self.object_storage = (
             oci.object_storage.ObjectStorageClient(config)
         )
+
         self.document_client = (
             oci.ai_document.AIServiceDocumentClient(config)
         )
@@ -137,3 +138,26 @@ class OCIInvoiceClient:
         )
 
         return output_name, final_document
+
+    def save_normalized_document(
+        self,
+        document_id: str,
+        document: dict[str, Any],
+    ) -> str:
+        object_name = f"normalized/{document_id}.json"
+
+        body = json.dumps(
+            document,
+            indent=2,
+            default=str,
+        ).encode("utf-8")
+
+        self.object_storage.put_object(
+            namespace_name=self.namespace,
+            bucket_name=settings.output_bucket,
+            object_name=object_name,
+            put_object_body=body,
+            content_type="application/json",
+        )
+
+        return object_name

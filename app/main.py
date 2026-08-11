@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / "templates"
 STATIC_DIR = BASE_DIR / "static"
@@ -21,12 +22,19 @@ app = FastAPI(
 app.include_router(invoices_router)
 
 app.mount(
+    "/uploads",
+    StaticFiles(directory="uploads"),
+    name="uploads",
+)
+
+app.mount(
     "/static",
     StaticFiles(directory=str(STATIC_DIR)),
     name="static",
 )
 
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+app.state.templates = templates
 
 
 @app.get("/")

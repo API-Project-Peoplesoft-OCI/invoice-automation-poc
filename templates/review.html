@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Invoice Review</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .page {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 6px 0;
+        }
+
+        .document-id {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .status {
+            padding: 9px 15px;
+            border-radius: 999px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .status-review {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-ready {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .warning-box {
+            background: #fff8e1;
+            border: 1px solid #f0d98c;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .warning-box h3 {
+            margin-top: 0;
+        }
+
+        .warning-box ul {
+            margin-bottom: 0;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .invoice-preview-container {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .invoice-preview {
+            width: 100%;
+            max-height: 850px;
+            object-fit: contain;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus {
+            outline: 2px solid #94a3b8;
+            border-color: transparent;
+        }
+
+        .line-items {
+            margin-top: 24px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+            overflow-x: auto;
+        }
+
+        .line-items h2 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            background: #f8fafc;
+            padding: 12px;
+            border-bottom: 1px solid #d1d5db;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td input {
+            min-width: 90px;
+        }
+
+        .description-input {
+            min-width: 260px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .approve {
+            background: #1f2937;
+            color: white;
+            border: 1px solid #1f2937;
+        }
+
+        .approve:hover {
+            background: #111827;
+        }
+
+        .reject {
+            background: white;
+            color: #b91c1c;
+            border: 1px solid #b91c1c;
+        }
+
+        .reject:hover {
+            background: #fef2f2;
+        }
+
+        .approved-message {
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .rejected-message {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page {
+                padding: 14px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Invoice Review</h1>
+
+            <div class="document-id">
+                Document ID:
+                {{ document.document_id }}
+            </div>
+
+        </div>
+
+
+        {% if document.processing_status == "APPROVED" %}
+
+        <div class="status status-approved">
+            APPROVED
+        </div>
+
+        {% elif document.processing_status == "REJECTED" %}
+
+        <div class="status status-rejected">
+            REJECTED
+        </div>
+
+        {% elif document.processing_status == "READY" %}
+
+        <div class="status status-ready">
+            READY
+        </div>
+
+        {% else %}
+
+        <div class="status status-review">
+            REVIEW REQUIRED
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- APPROVED MESSAGE -->
+
+    {% if document.processing_status == "APPROVED" %}
+
+    <div class="approved-message">
+
+        <strong>Invoice approved.</strong>
+
+        The corrected invoice data has been saved locally
+        and updated in OCI Object Storage.
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- REJECTED MESSAGE -->
+
+    {% if document.processing_status == "REJECTED" %}
+
+    <div class="rejected-message">
+
+        <strong>Invoice rejected.</strong>
+
+        This invoice should not be sent to PeopleSoft.
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- WARNINGS -->
+
+    {% if document.validation.warnings %}
+
+    <div class="warning-box">
+
+        <h3>Review Required</h3>
+
+        <ul>
+
+            {% for warning in document.validation.warnings %}
+
+            <li>
+                {{ warning }}
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- MAIN EDIT FORM -->
+
+    <form
+        method="post"
+        action="/invoices/{{ document.document_id }}/approve"
+    >
+
+
+        <div class="review-grid">
+
+
+            <!-- ORIGINAL INVOICE -->
+
+            <div class="panel">
+
+                <h2>Original Invoice</h2>
+
+                <div class="invoice-preview-container">
+
+                    <img
+                        src="{{ image_url }}"
+                        alt="Original invoice"
+                        class="invoice-preview"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EXTRACTED DATA -->
+
+            <div class="panel">
+
+                <h2>Extracted Data</h2>
+
+
+                <div class="form-grid">
+
+
+                    <div class="field">
+
+                        <label>
+                            Supplier Name
+                        </label>
+
+                        <input
+                            name="supplier_name"
+                            value="{{ document.invoice.supplier_name or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Invoice Number
+                        </label>
+
+                        <input
+                            name="invoice_number"
+                            value="{{ document.invoice.invoice_number or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Invoice Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="invoice_date"
+                            value="{{ document.invoice.invoice_date or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            PO Number
+                        </label>
+
+                        <input
+                            name="po_number"
+                            value="{{ document.invoice.po_number or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Currency
+                        </label>
+
+                        <input
+                            name="currency_code"
+                            value="{{ document.invoice.currency_code or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Gross Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="gross_amount"
+                            value="{{ document.invoice.gross_amount }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Tax Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="tax_amount"
+                            value="{{ document.invoice.tax_amount }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Freight
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="freight_amount"
+                            value="{{ document.invoice.freight_amount }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Discount
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="discount_amount"
+                            value="{{ document.invoice.discount_amount }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Payment Terms
+                        </label>
+
+                        <input
+                            name="payment_terms"
+                            value="{{ document.invoice.payment_terms or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Due Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="due_date"
+                            value="{{ document.invoice.due_date or '' }}"
+                        >
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            Remit To Address
+                        </label>
+
+                        <input
+                            name="remit_to_address"
+                            value="{{ document.invoice.remit_to_address or '' }}"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- LINE ITEMS -->
+
+        <div class="line-items">
+
+            <h2>Line Items</h2>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Line
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            UOM
+                        </th>
+
+                        <th>
+                            Unit Price
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for line in document.invoice.line_items %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ line.line_number }}
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                class="description-input"
+                                name="description_{{ line.line_number }}"
+                                value="{{ line.description or '' }}"
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="quantity_{{ line.line_number }}"
+                                value="{{ line.quantity or '' }}"
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                name="uom_{{ line.line_number }}"
+                                value="{{ line.unit_of_measure or '' }}"
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="unit_price_{{ line.line_number }}"
+                                value="{{ line.unit_price or '' }}"
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="line_amount_{{ line.line_number }}"
+                                value="{{ line.line_amount or '' }}"
+                            >
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="actions">
+
+
+            <button
+                type="submit"
+                class="reject"
+                formaction="/invoices/{{ document.document_id }}/reject"
+                formmethod="post"
+            >
+                Reject Invoice
+            </button>
+
+
+            <button
+                type="submit"
+                class="approve"
+            >
+                Approve Invoice
+            </button>
+
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+</body>
+
+</html>

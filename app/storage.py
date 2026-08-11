@@ -4,6 +4,48 @@ from uuid import uuid4
 from fastapi import UploadFile
 
 from app.config import settings
+import json
+from pathlib import Path
+from typing import Any
+
+
+from app.config import settings
+
+
+def save_normalized_invoice(
+    document_id: str,
+    data: dict[str, Any],
+) -> Path:
+    destination = (
+        settings.output_dir
+        / f"{document_id}.json"
+    )
+
+    destination.write_text(
+        json.dumps(
+            data,
+            indent=2,
+            default=str,
+        ),
+        encoding="utf-8",
+    )
+
+    return destination
+
+
+def load_normalized_invoice(
+    document_id: str,
+) -> dict[str, Any]:
+    path = settings.output_dir / f"{document_id}.json"
+
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Invoice {document_id} was not found."
+        )
+
+    return json.loads(
+        path.read_text(encoding="utf-8")
+    )
 
 
 ALLOWED_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg"}
